@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.Website;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
+import pl.szczurowsky.mcantiproxy.cache.CacheManager;
 import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommand;
 import pl.szczurowsky.mcantiproxy.commands.handler.InvalidUsage;
 import pl.szczurowsky.mcantiproxy.commands.handler.PermissionMessageHandler;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 
-@Plugin(name = "McAntiProxy-Spigot", version = "1.0")
+@Plugin(name = "McAntiProxy-Spigot", version = "1.1")
 @Author("Szczurowsky")
 @Website("https://szczurowsky.pl")
 @Description("🛡️️ Simple plugin which block all player using proxies/VPN basing on proxycheck.io API")
@@ -33,6 +34,7 @@ public class SpigotPlugin extends JavaPlugin {
     private PluginConfig config;
     private MessagesConfig messagesConfig;
     private LiteCommands liteCommands;
+    private CacheManager cacheManager;
 
     @Override
     public void onEnable() {
@@ -44,6 +46,9 @@ public class SpigotPlugin extends JavaPlugin {
         registerConfigs();
         logger.info("Configs registered");
 
+        this.cacheManager = new CacheManager(config.getCacheExpirationTime());
+        logger.info("Cache manager initialized");
+
         registerEvents();
         logger.info("Events registered");
 
@@ -54,7 +59,7 @@ public class SpigotPlugin extends JavaPlugin {
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new PreLoginHandler(config, messagesConfig), this);
+        getServer().getPluginManager().registerEvents(new PreLoginHandler(config, messagesConfig, cacheManager), this);
     }
 
     private void registerConfigs() {

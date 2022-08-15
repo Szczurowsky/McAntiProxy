@@ -5,6 +5,7 @@ import dev.rollczi.litecommands.bungee.LiteBungeeFactory;
 import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.yaml.bungee.YamlBungeeConfigurer;
 import net.md_5.bungee.api.plugin.Plugin;
+import pl.szczurowsky.mcantiproxy.cache.CacheManager;
 import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommand;
 import pl.szczurowsky.mcantiproxy.commands.handler.InvalidUsage;
 import pl.szczurowsky.mcantiproxy.commands.handler.PermissionMessageHandler;
@@ -22,6 +23,7 @@ public class BungeePlugin extends Plugin {
     private PluginConfig config;
     private MessagesConfig messagesConfig;
     private LiteCommands liteCommands;
+    private CacheManager cacheManager;
 
     @Override
     public void onEnable() {
@@ -33,6 +35,9 @@ public class BungeePlugin extends Plugin {
         registerConfigs();
         logger.info("Configs registered");
 
+        this.cacheManager = new CacheManager(config.getCacheExpirationTime());
+        logger.info("Cache manager initialized");
+
         registerEvents();
         logger.info("Events registered");
 
@@ -43,7 +48,7 @@ public class BungeePlugin extends Plugin {
     }
 
     private void registerEvents() {
-        getProxy().getPluginManager().registerListener(this, new PreLoginHandler(config, messagesConfig));
+        getProxy().getPluginManager().registerListener(this, new PreLoginHandler(config, messagesConfig, cacheManager));
     }
 
     private void registerConfigs() {

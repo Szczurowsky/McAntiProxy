@@ -13,6 +13,7 @@ import dev.rollczi.litecommands.velocity.LiteVelocityFactory;
 import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
 import org.jetbrains.annotations.NotNull;
+import pl.szczurowsky.mcantiproxy.cache.CacheManager;
 import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommand;
 import pl.szczurowsky.mcantiproxy.commands.handler.InvalidUsage;
 import pl.szczurowsky.mcantiproxy.commands.handler.PermissionMessageHandler;
@@ -30,12 +31,14 @@ import java.util.logging.Logger;
         id = "mcantiproxy",
         name = "McAntiProxy-Velocity",
         authors = "Szczurowsky",
+        version = "1.1",
         url = "https://szczurowsky.pl/"
 )
 public class VelocityPlugin {
 
     private PluginConfig config;
     private MessagesConfig messagesConfig;
+    private CacheManager cacheManager;
 
     /**
      * Velocity plugin constructor.
@@ -63,6 +66,9 @@ public class VelocityPlugin {
         registerConfigs();
         logger.info("Configs registered");
 
+        this.cacheManager = new CacheManager(config.getCacheExpirationTime());
+        logger.info("Cache manager initialized");
+
         registerEvents();
         logger.info("Events registered");
 
@@ -87,7 +93,7 @@ public class VelocityPlugin {
     }
 
     private void registerEvents() {
-        this.proxyServer.getEventManager().register(this, new PreLoginHandler(config, messagesConfig));
+        this.proxyServer.getEventManager().register(this, new PreLoginHandler(config, messagesConfig, cacheManager));
     }
 
     private void registerConfigs() {

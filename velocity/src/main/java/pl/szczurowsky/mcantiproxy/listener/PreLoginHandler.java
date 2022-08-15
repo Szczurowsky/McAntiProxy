@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.json.JSONObject;
+import pl.szczurowsky.mcantiproxy.cache.CacheManager;
 import pl.szczurowsky.mcantiproxy.configs.MessagesConfig;
 import pl.szczurowsky.mcantiproxy.configs.PluginConfig;
 import pl.szczurowsky.mcantiproxy.util.HttpUtil;
@@ -16,10 +17,12 @@ public class PreLoginHandler {
 
     private final PluginConfig config;
     private final MessagesConfig messagesConfig;
+    private final CacheManager cacheManager;
 
-    public PreLoginHandler(PluginConfig config, MessagesConfig messagesConfig) {
+    public PreLoginHandler(PluginConfig config, MessagesConfig messagesConfig, CacheManager cacheManager) {
         this.config = config;
         this.messagesConfig = messagesConfig;
+        this.cacheManager = cacheManager;
     }
 
     @Subscribe(order = PostOrder.FIRST)
@@ -27,6 +30,10 @@ public class PreLoginHandler {
         return EventTask.async(() -> {
             String token = config.getToken();
             String ip = event.getConnection().getRemoteAddress().getAddress().getHostAddress();
+            if (cacheManager.isCached(ip)) {
+                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(messagesConfig.getKickMessage().replace("{ip}", ip))));
+                return;
+            }
             try {
                 HttpURLConnection connection = HttpUtil.prepareConnection(HttpUtil.createConnection("https://proxycheck.io/v2/" + ip + "?key=" + token + "&vpn=1"));
                 if (connection.getResponseCode() != 200)
@@ -37,6 +44,7 @@ public class PreLoginHandler {
                     return;
                 if (data.getString("proxy").equals("yes") && !config.getWhitelistedIps().contains(ip)) {
                     event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(messagesConfig.getKickMessage().replace("{ip}", ip))));
+                    cacheManager.addToCache(ip);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
