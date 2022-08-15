@@ -33,6 +33,8 @@ public class PreLoginHandler {
                     return;
                 JSONObject response = new JSONObject(HttpUtil.readSourceCode(connection));
                 JSONObject data = response.getJSONObject(ip);
+                if (!data.has("proxy"))
+                    return;
                 if (data.getString("proxy").equals("yes") && !config.getWhitelistedIps().contains(ip)) {
                     event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(messagesConfig.getKickMessage().replace("{ip}", ip))));
                 }

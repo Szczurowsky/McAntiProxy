@@ -32,6 +32,8 @@ public class PreLoginHandler implements Listener {
                 return;
             JSONObject response = new JSONObject(HttpUtil.readSourceCode(connection));
             JSONObject data = response.getJSONObject(ip);
+            if (!data.has("proxy"))
+                return;
             if (data.getString("proxy").equals("yes") && !config.getWhitelistedIps().contains(ip)) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ColorUtil.format(messagesConfig.getKickMessage().replace("{ip}", ip)));
             }
