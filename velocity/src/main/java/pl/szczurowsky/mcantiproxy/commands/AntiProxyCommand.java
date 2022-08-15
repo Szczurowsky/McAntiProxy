@@ -1,13 +1,13 @@
 package pl.szczurowsky.mcantiproxy.commands;
 
+import com.velocitypowered.api.command.CommandSource;
 import dev.rollczi.litecommands.command.amount.Required;
 import dev.rollczi.litecommands.command.execute.Execute;
 import dev.rollczi.litecommands.command.permission.Permission;
 import dev.rollczi.litecommands.command.section.Section;
-import dev.rollczi.litecommands.platform.LiteSender;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import pl.szczurowsky.mcantiproxy.configs.MessagesConfig;
 import pl.szczurowsky.mcantiproxy.configs.PluginConfig;
-import pl.szczurowsky.mcantiproxy.util.ColorUtil;
 
 @Section(route = "antiproxy", aliases = "ap")
 @Permission("antiproxy.admin")
@@ -23,16 +23,18 @@ public class AntiProxyCommand {
 
     @Execute()
     @Required(0)
-    public void help(LiteSender liteSender) {
-        ColorUtil.formatList(messagesConfig.getHelp()).forEach(liteSender::sendMessage);
+    public void help(CommandSource velocitySender) {
+        messagesConfig.getHelp().forEach(message -> {
+            velocitySender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
+        });
     }
 
     @Execute(route = "reload")
     @Required(0)
-    public void reload(LiteSender liteSender) {
+    public void reload(CommandSource velocitySender) {
         config.load();
         messagesConfig.load();
-        liteSender.sendMessage(ColorUtil.format(messagesConfig.getReloadSuccess()));
+        velocitySender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(messagesConfig.getReloadSuccess()));
     }
 
 }
