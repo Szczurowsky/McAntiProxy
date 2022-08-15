@@ -1,0 +1,5 @@
+name: McAntiProxy-Bungee
+version: '${project.version}'
+author: "Szczurowsky"
+website: "https://szczurowsky.pl"
+main: pl.szczurowsky.mcantiproxy.BungeePlugin
