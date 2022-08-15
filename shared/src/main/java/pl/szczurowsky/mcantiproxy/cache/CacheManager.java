@@ -24,7 +24,7 @@ public class CacheManager {
     public boolean isCached(String ip) {
         if (cache.containsKey(ip)) {
             LocalDateTime timestamp = cache.get(ip);
-            if (LocalDateTime.now().plusSeconds(cacheTime).isAfter(timestamp)) {
+            if (LocalDateTime.now().isAfter(timestamp)) {
                 cache.remove(ip);
                 return false;
             }
@@ -34,7 +34,7 @@ public class CacheManager {
     }
 
     public void addToCache(String ip) {
-        cache.put(ip, LocalDateTime.now());
+        cache.put(ip, LocalDateTime.now().plusSeconds(cacheTime));
     }
 
 }
