@@ -46,8 +46,10 @@ public class PreLoginHandler implements Listener {
             if (data.getString("proxy").equals("yes") && !config.getWhitelistedIps().contains(ip)) {
                 event.setCancelled(true);
                 event.setCancelReason(TextComponent.fromLegacyText(ColorUtil.format(messagesConfig.getKickMessage().replace("{ip}", ip))));
-                cacheManager.addToCache(ip);
+                cacheManager.addToCache(ip, true);
+                return;
             }
+            cacheManager.addToCache(ip, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
