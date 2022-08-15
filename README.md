@@ -9,6 +9,7 @@
 - Hot reload
 - Lightweight
 - Configurable
+- Cache system
 
 ## Screenshoots
 

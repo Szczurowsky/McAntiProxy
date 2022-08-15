@@ -17,6 +17,10 @@ public class PluginConfig extends OkaeriConfig {
     @Comment("List of IPs which are allowed to connect to server")
     private List<String> whitelistedIps = Collections.singletonList("127.0.0.1");
 
+    @Variable("CACHE-EXPRIE")
+    @Comment("Cache expiration time in seconds")
+    private Long cacheExpirationTime = 60 * 15L;
+
     public String getToken() {
         return token;
     }
@@ -25,4 +29,7 @@ public class PluginConfig extends OkaeriConfig {
         return whitelistedIps;
     }
 
+    public Long getCacheExpirationTime() {
+        return cacheExpirationTime;
+    }
 }
