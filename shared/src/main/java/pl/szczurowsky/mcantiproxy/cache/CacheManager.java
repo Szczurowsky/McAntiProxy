@@ -10,6 +10,9 @@ public class CacheManager {
      */
     protected HashMap<String, LocalDateTime> cache = new HashMap<>();
 
+    protected HashMap<String, Boolean> cacheResult = new HashMap<>();
+
+
     protected final long cacheTime;
 
     public CacheManager(long cacheTime) {
@@ -28,13 +31,17 @@ public class CacheManager {
                 cache.remove(ip);
                 return false;
             }
-            return true;
+            if (cacheResult.containsKey(ip)) {
+                return cacheResult.get(ip);
+            }
+            return false;
         }
         return false;
     }
 
-    public void addToCache(String ip) {
+    public void addToCache(String ip, boolean result) {
         cache.put(ip, LocalDateTime.now().plusSeconds(cacheTime));
+        cacheResult.put(ip, result);
     }
 
 }
