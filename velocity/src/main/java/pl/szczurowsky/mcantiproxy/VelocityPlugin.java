@@ -1,6 +1,5 @@
 package pl.szczurowsky.mcantiproxy;
 
-
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -8,15 +7,12 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginDescription;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import dev.rollczi.litecommands.LiteCommands;
 import dev.rollczi.litecommands.velocity.LiteVelocityFactory;
 import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
 import org.jetbrains.annotations.NotNull;
 import pl.szczurowsky.mcantiproxy.cache.CacheManager;
-import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommand;
-import pl.szczurowsky.mcantiproxy.commands.handler.InvalidUsage;
-import pl.szczurowsky.mcantiproxy.commands.handler.PermissionMessageHandler;
+import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommandsBuilder;
 import pl.szczurowsky.mcantiproxy.configs.MessagesConfig;
 import pl.szczurowsky.mcantiproxy.configs.PluginConfig;
 import pl.szczurowsky.mcantiproxy.listener.PreLoginHandler;
@@ -47,7 +43,6 @@ public class VelocityPlugin {
     private final Path dataDirectory;
     private final ProxyServer proxyServer;
     private final PluginDescription pluginDescription;
-    private LiteCommands liteCommands;
 
     @Inject
     public VelocityPlugin(Logger logger, @DataDirectory Path dataDirectory, ProxyServer proxyServer, PluginDescription pluginDescription) {
@@ -78,18 +73,9 @@ public class VelocityPlugin {
         logger.info("Successfully enabled plugin in " + ChronoUnit.MILLIS.between(starting, LocalDateTime.now()) + "ms");
     }
 
-
     private void registerCommands() {
-        this.liteCommands = LiteVelocityFactory.builder(proxyServer)
-                .permissionHandler(new PermissionMessageHandler(messagesConfig))
-                .invalidUsageHandler(new InvalidUsage(messagesConfig))
-
-                .typeBind(PluginConfig.class, () -> this.config)
-                .typeBind(MessagesConfig.class, () -> this.messagesConfig)
-
-                .command(AntiProxyCommand.class)
-
-                .register();
+        AntiProxyCommandsBuilder.applyOn(LiteVelocityFactory.builder(proxyServer), this.config, this.messagesConfig)
+                .forwardingRegister();
     }
 
     private void registerEvents() {

@@ -19,16 +19,21 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-proxy</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>eu.okaeri</groupId>
             <artifactId>okaeri-configs-yaml-bungee</artifactId>
             <version>4.0.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.rollczi.litecommands</groupId>
+            <artifactId>bungee</artifactId>
+            <version>2.4.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20220320</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -38,14 +43,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20220320</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.rollczi.litecommands</groupId>
-            <artifactId>bungee</artifactId>
-            <version>2.4.2</version>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-proxy</artifactId>
+            <version>1.19-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

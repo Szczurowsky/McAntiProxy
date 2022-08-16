@@ -13,6 +13,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>dev.rollczi.litecommands</groupId>
+            <artifactId>core</artifactId>
+            <version>2.4.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>eu.okaeri</groupId>
             <artifactId>okaeri-configs-core</artifactId>
             <version>4.0.6</version>

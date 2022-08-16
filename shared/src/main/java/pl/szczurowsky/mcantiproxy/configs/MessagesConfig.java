@@ -22,6 +22,9 @@ public class MessagesConfig extends OkaeriConfig {
     @Comment("Message when config is reloaded successfully")
     private String reloadSuccess = "&8[ &a&l✔&8 ] &aConfigs reloaded";
 
+    @Comment("Message when config's reload failed")
+    private String reloadFailure = "&8[ &4&l✖&8 ] &cConfigs reload failed";
+
     @Comment("Help menu")
     private List<String> help = Arrays.asList(
             "&7●●●●●●● &6&lAntiProxy &7●●●●●●●",
@@ -46,6 +49,10 @@ public class MessagesConfig extends OkaeriConfig {
 
     public String getReloadSuccess() {
         return reloadSuccess;
+    }
+
+    public String getReloadFailure() {
+        return reloadFailure;
     }
 
     public String getKickMessage() {

@@ -5,6 +5,7 @@ import dev.rollczi.litecommands.bukkit.LiteBukkitFactory;
 import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
 import eu.okaeri.configs.yaml.bukkit.serdes.SerdesBukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.LogPrefix;
@@ -12,9 +13,7 @@ import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.Website;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import pl.szczurowsky.mcantiproxy.cache.CacheManager;
-import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommand;
-import pl.szczurowsky.mcantiproxy.commands.handler.InvalidUsage;
-import pl.szczurowsky.mcantiproxy.commands.handler.PermissionMessageHandler;
+import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommandsBuilder;
 import pl.szczurowsky.mcantiproxy.configs.MessagesConfig;
 import pl.szczurowsky.mcantiproxy.configs.PluginConfig;
 import pl.szczurowsky.mcantiproxy.listener.PreLoginHandler;
@@ -33,7 +32,7 @@ public class SpigotPlugin extends JavaPlugin {
 
     private PluginConfig config;
     private MessagesConfig messagesConfig;
-    private LiteCommands liteCommands;
+    private LiteCommands<CommandSender> liteCommands;
     private CacheManager cacheManager;
 
     @Override
@@ -58,6 +57,11 @@ public class SpigotPlugin extends JavaPlugin {
         logger.info("Successfully enabled plugin in " + ChronoUnit.MILLIS.between(starting, LocalDateTime.now()) + "ms");
     }
 
+    @Override
+    public void onDisable() {
+        this.liteCommands.getCommandService().getPlatform().unregisterAll();
+    }
+
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new PreLoginHandler(config, messagesConfig, cacheManager), this);
     }
@@ -79,16 +83,8 @@ public class SpigotPlugin extends JavaPlugin {
     }
 
     private void registerCommands() {
-        this.liteCommands = LiteBukkitFactory.builder(getServer(), "antiproxy")
-                .permissionHandler(new PermissionMessageHandler(messagesConfig))
-                .invalidUsageHandler(new InvalidUsage(messagesConfig))
-
-                .typeBind(PluginConfig.class, () -> this.config)
-                .typeBind(MessagesConfig.class, () -> this.messagesConfig)
-
-                .command(AntiProxyCommand.class)
-
-                .register();
+        this.liteCommands = AntiProxyCommandsBuilder.applyOn(LiteBukkitFactory.builder(getServer(), "antiproxy"), this.config, this.messagesConfig)
+                .forwardingRegister();
     }
 
 }
