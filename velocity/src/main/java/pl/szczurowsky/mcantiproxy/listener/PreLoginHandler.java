@@ -28,10 +28,10 @@ public class PreLoginHandler {
     @Subscribe(order = PostOrder.FIRST)
     public EventTask onPreLogin(PreLoginEvent event) {
         return EventTask.async(() -> {
-            String token = config.getToken();
+            String token = config.token;
             String ip = event.getConnection().getRemoteAddress().getAddress().getHostAddress();
             if (cacheManager.isCached(ip)) {
-                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(messagesConfig.getKickMessage().replace("{ip}", ip))));
+                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(messagesConfig.kickMessage.replace("{ip}", ip))));
                 return;
             }
             try {
@@ -42,8 +42,8 @@ public class PreLoginHandler {
                 JSONObject data = response.getJSONObject(ip);
                 if (!data.has("proxy"))
                     return;
-                if (data.getString("proxy").equals("yes") && !config.getWhitelistedIps().contains(ip)) {
-                    event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(messagesConfig.getKickMessage().replace("{ip}", ip))));
+                if (data.getString("proxy").equals("yes") && !config.whitelistedIps.contains(ip)) {
+                    event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(messagesConfig.kickMessage.replace("{ip}", ip))));
                     cacheManager.addToCache(ip, true);
                     return;
                 }

@@ -19,7 +19,7 @@ public class AntiProxyCommand {
 
     @Execute(required = 0)
     public String help() {
-        return String.join("\n", messagesConfig.getHelp());
+        return String.join("\n", messagesConfig.helpMessage);
     }
 
     @Execute(route = "reload")
@@ -27,9 +27,9 @@ public class AntiProxyCommand {
         try {
             config.load();
             messagesConfig.load();
-            return messagesConfig.getReloadSuccess();
+            return messagesConfig.reloadSuccessMessage;
         } catch (OkaeriException exception) {
-            return messagesConfig.getReloadFailure();
+            return messagesConfig.reloadFailureMessage;
         }
     }
 }

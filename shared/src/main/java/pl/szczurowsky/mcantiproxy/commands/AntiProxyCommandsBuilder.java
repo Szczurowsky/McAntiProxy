@@ -22,10 +22,10 @@ public class AntiProxyCommandsBuilder<T> {
         LiteCommandsBuilder<T> fancyCommandsBuilder = originCommandsBuilder
                 .typeBind(PluginConfig.class, () -> pluginConfig)
                 .typeBind(MessagesConfig.class, () -> messagesConfig)
-                .redirectResult(LitePermissions.class, String.class, permissions -> messagesConfig.getNoPermission())
+                .redirectResult(LitePermissions.class, String.class, permissions -> messagesConfig.noPermissionMessage)
                 .redirectResult(Scheme.class, String.class, scheme -> {
                     String delimiter = scheme.getSchemes().size() == 1 ? " " : "\n";
-                    return messagesConfig.getInvalidUsage() + delimiter + String.join(delimiter, scheme.getSchemes());
+                    return messagesConfig.invalidUsageMessage + delimiter + String.join(delimiter, scheme.getSchemes());
                 });
         return new AntiProxyCommandsBuilder<>(fancyCommandsBuilder);
     }

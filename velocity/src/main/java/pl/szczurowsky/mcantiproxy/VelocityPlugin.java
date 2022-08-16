@@ -4,20 +4,18 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
-import com.velocitypowered.api.plugin.PluginDescription;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.rollczi.litecommands.velocity.LiteVelocityFactory;
-import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
 import org.jetbrains.annotations.NotNull;
 import pl.szczurowsky.mcantiproxy.cache.CacheManager;
 import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommandsBuilder;
 import pl.szczurowsky.mcantiproxy.configs.MessagesConfig;
 import pl.szczurowsky.mcantiproxy.configs.PluginConfig;
+import pl.szczurowsky.mcantiproxy.configs.factory.ConfigFactory;
 import pl.szczurowsky.mcantiproxy.listener.PreLoginHandler;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -42,14 +40,12 @@ public class VelocityPlugin {
     private final Logger logger;
     private final Path dataDirectory;
     private final ProxyServer proxyServer;
-    private final PluginDescription pluginDescription;
 
     @Inject
-    public VelocityPlugin(Logger logger, @DataDirectory Path dataDirectory, ProxyServer proxyServer, PluginDescription pluginDescription) {
+    public VelocityPlugin(Logger logger, @DataDirectory Path dataDirectory, ProxyServer proxyServer) {
         this.logger = logger;
         this.dataDirectory = dataDirectory;
         this.proxyServer = proxyServer;
-        this.pluginDescription = pluginDescription;
     }
 
     @Subscribe
@@ -61,7 +57,7 @@ public class VelocityPlugin {
         registerConfigs();
         logger.info("Configs registered");
 
-        this.cacheManager = new CacheManager(config.getCacheExpirationTime());
+        this.cacheManager = new CacheManager(config.cacheExpirationTime);
         logger.info("Cache manager initialized");
 
         registerEvents();
@@ -83,19 +79,9 @@ public class VelocityPlugin {
     }
 
     private void registerConfigs() {
-        this.config = ConfigManager.create(PluginConfig.class, (config) -> {
-            config.withConfigurer(new YamlSnakeYamlConfigurer());
-            config.withBindFile(new File(dataDirectory.toFile(), "config.yml"));
-            config.saveDefaults();
-            config.load(true);
-        });
-
-        this.messagesConfig = ConfigManager.create(MessagesConfig.class, (config) -> {
-            config.withConfigurer(new YamlSnakeYamlConfigurer());
-            config.withBindFile(new File(dataDirectory.toFile(), "messages.yml"));
-            config.saveDefaults();
-            config.load(true);
-        });
+        ConfigFactory configFactory = new ConfigFactory(dataDirectory.toFile(), YamlSnakeYamlConfigurer::new);
+        this.config = configFactory.produceConfig(PluginConfig.class, "config.yml");
+        this.messagesConfig = configFactory.produceConfig(MessagesConfig.class, "message.yml");
     }
 
 }
