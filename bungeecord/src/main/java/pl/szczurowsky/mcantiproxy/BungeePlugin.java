@@ -4,11 +4,10 @@ import dev.rollczi.litecommands.LiteCommands;
 import dev.rollczi.litecommands.bungee.LiteBungeeFactory;
 import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.yaml.bungee.YamlBungeeConfigurer;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Plugin;
 import pl.szczurowsky.mcantiproxy.cache.CacheManager;
-import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommand;
-import pl.szczurowsky.mcantiproxy.commands.handler.InvalidUsage;
-import pl.szczurowsky.mcantiproxy.commands.handler.PermissionMessageHandler;
+import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommandsBuilder;
 import pl.szczurowsky.mcantiproxy.configs.MessagesConfig;
 import pl.szczurowsky.mcantiproxy.configs.PluginConfig;
 import pl.szczurowsky.mcantiproxy.listener.PreLoginHandler;
@@ -22,7 +21,7 @@ public class BungeePlugin extends Plugin {
 
     private PluginConfig config;
     private MessagesConfig messagesConfig;
-    private LiteCommands liteCommands;
+    private LiteCommands<CommandSender> liteCommands;
     private CacheManager cacheManager;
 
     @Override
@@ -47,6 +46,11 @@ public class BungeePlugin extends Plugin {
         logger.info("Successfully enabled plugin in " + ChronoUnit.MILLIS.between(starting, LocalDateTime.now()) + "ms");
     }
 
+    @Override
+    public void onDisable() {
+        this.liteCommands.getCommandService().getPlatform().unregisterAll();
+    }
+
     private void registerEvents() {
         getProxy().getPluginManager().registerListener(this, new PreLoginHandler(config, messagesConfig, cacheManager));
     }
@@ -68,16 +72,8 @@ public class BungeePlugin extends Plugin {
     }
 
     private void registerCommands() {
-        this.liteCommands = LiteBungeeFactory.builder(this)
-                .permissionHandler(new PermissionMessageHandler(messagesConfig))
-                .invalidUsageHandler(new InvalidUsage(messagesConfig))
-
-                .typeBind(PluginConfig.class, () -> this.config)
-                .typeBind(MessagesConfig.class, () -> this.messagesConfig)
-
-                .command(AntiProxyCommand.class)
-
-                .register();
+        this.liteCommands = AntiProxyCommandsBuilder.applyOn(LiteBungeeFactory.builder(this), this.config, this.messagesConfig)
+                .forwardingRegister();
     }
 
 }

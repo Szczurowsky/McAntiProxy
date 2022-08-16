@@ -11,6 +11,10 @@ import java.nio.charset.StandardCharsets;
 
 public final class HttpUtil {
 
+    private HttpUtil() {
+
+    }
+
     public static HttpURLConnection createConnection(String request) throws IOException {
         return (HttpURLConnection) new URL(request).openConnection();
     }
@@ -23,18 +27,17 @@ public final class HttpUtil {
         return connection;
     }
 
-    public static String readSourceCode(URLConnection conn) throws IOException {
-        InputStream is = conn.getInputStream();
-        InputStreamReader re = new InputStreamReader(is, StandardCharsets.UTF_8);
-        BufferedReader in = new BufferedReader(re);
+    public static String readSourceCode(URLConnection connection) throws IOException {
+        try (InputStream inputStream = connection.getInputStream();
+             BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            StringBuilder builder = new StringBuilder();
 
-        String inputLine;
-        StringBuilder a = new StringBuilder();
-        while ((inputLine = in.readLine()) != null)
-            a.append(inputLine);
-        in.close();
+            String inputLine;
+            while ((inputLine = inputStreamReader.readLine()) != null)
+                builder.append(inputLine);
 
-        return a.toString();
+            return builder.toString();
+        }
     }
 
 }
