@@ -28,11 +28,11 @@ public class PreLoginHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(PreLoginEvent event) {
-        String token = config.getToken();
+        String token = config.token;
         String ip = (event.getConnection().getSocketAddress().toString().split(":")[0]).substring(1);
         if (cacheManager.isCached(ip)) {
             event.setCancelled(true);
-            event.setCancelReason(TextComponent.fromLegacyText(ColorUtil.format(messagesConfig.getKickMessage().replace("{ip}", ip))));
+            event.setCancelReason(TextComponent.fromLegacyText(ColorUtil.format(messagesConfig.kickMessage.replace("{ip}", ip))));
             return;
         }
         try {
@@ -43,9 +43,9 @@ public class PreLoginHandler implements Listener {
             JSONObject data = response.getJSONObject(ip);
             if (!data.has("proxy"))
                 return;
-            if (data.getString("proxy").equals("yes") && !config.getWhitelistedIps().contains(ip)) {
+            if (data.getString("proxy").equals("yes") && !config.whitelistedIps.contains(ip)) {
                 event.setCancelled(true);
-                event.setCancelReason(TextComponent.fromLegacyText(ColorUtil.format(messagesConfig.getKickMessage().replace("{ip}", ip))));
+                event.setCancelReason(TextComponent.fromLegacyText(ColorUtil.format(messagesConfig.kickMessage.replace("{ip}", ip))));
                 cacheManager.addToCache(ip, true);
                 return;
             }

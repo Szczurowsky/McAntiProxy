@@ -1,21 +1,22 @@
 package pl.szczurowsky.mcantiproxy.cache;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CacheManager {
 
     /**
      * Cache map with key - ip address and value - timestamp
      */
-    protected HashMap<String, LocalDateTime> cache = new HashMap<>();
+    protected Map<String, LocalDateTime> cache = new HashMap<>();
 
-    protected HashMap<String, Boolean> cacheResult = new HashMap<>();
+    protected Map<String, Boolean> cacheResult = new HashMap<>();
 
+    protected final Duration cacheTime;
 
-    protected final long cacheTime;
-
-    public CacheManager(long cacheTime) {
+    public CacheManager(Duration cacheTime) {
         this.cacheTime = cacheTime;
     }
 
@@ -40,7 +41,7 @@ public class CacheManager {
     }
 
     public void addToCache(String ip, boolean result) {
-        cache.put(ip, LocalDateTime.now().plusSeconds(cacheTime));
+        cache.put(ip, LocalDateTime.now().plus(this.cacheTime));
         cacheResult.put(ip, result);
     }
 

@@ -2,7 +2,6 @@ package pl.szczurowsky.mcantiproxy;
 
 import dev.rollczi.litecommands.LiteCommands;
 import dev.rollczi.litecommands.bungee.LiteBungeeFactory;
-import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.yaml.bungee.YamlBungeeConfigurer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -10,9 +9,9 @@ import pl.szczurowsky.mcantiproxy.cache.CacheManager;
 import pl.szczurowsky.mcantiproxy.commands.AntiProxyCommandsBuilder;
 import pl.szczurowsky.mcantiproxy.configs.MessagesConfig;
 import pl.szczurowsky.mcantiproxy.configs.PluginConfig;
+import pl.szczurowsky.mcantiproxy.configs.factory.ConfigFactory;
 import pl.szczurowsky.mcantiproxy.listener.PreLoginHandler;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
@@ -34,7 +33,7 @@ public class BungeePlugin extends Plugin {
         registerConfigs();
         logger.info("Configs registered");
 
-        this.cacheManager = new CacheManager(config.getCacheExpirationTime());
+        this.cacheManager = new CacheManager(config.cacheExpirationTime);
         logger.info("Cache manager initialized");
 
         registerEvents();
@@ -56,19 +55,9 @@ public class BungeePlugin extends Plugin {
     }
 
     private void registerConfigs() {
-        this.config = ConfigManager.create(PluginConfig.class, (config) -> {
-            config.withConfigurer(new YamlBungeeConfigurer());
-            config.withBindFile(new File(getDataFolder(), "config.yml"));
-            config.saveDefaults();
-            config.load(true);
-        });
-
-        this.messagesConfig = ConfigManager.create(MessagesConfig.class, (config) -> {
-            config.withConfigurer(new YamlBungeeConfigurer());
-            config.withBindFile(new File(getDataFolder(), "message.yml"));
-            config.saveDefaults();
-            config.load(true);
-        });
+        ConfigFactory configFactory = new ConfigFactory(this.getDataFolder(), YamlBungeeConfigurer::new);
+        this.config = configFactory.produceConfig(PluginConfig.class, "config.yml");
+        this.messagesConfig = configFactory.produceConfig(MessagesConfig.class, "message.yml");
     }
 
     private void registerCommands() {

@@ -25,12 +25,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>eu.okaeri</groupId>
-            <artifactId>okaeri-configs-serdes-bukkit</artifactId>
-            <version>4.0.6</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>dev.rollczi.litecommands</groupId>
             <artifactId>bukkit</artifactId>
             <version>2.4.2</version>
