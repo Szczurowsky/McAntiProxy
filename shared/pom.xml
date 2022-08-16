@@ -11,19 +11,6 @@
 
     <artifactId>shared</artifactId>
 
-    <repositories>
-        <repository>
-            <id>szczurowsky-repository-releases</id>
-            <name>Szczurowsky Repository</name>
-            <url>https://repo.szczurowsky.pl/releases</url>
-        </repository>
-        <repository>
-            <id>szczurowsky-repository-snapshots</id>
-            <name>Szczurowsky Repository</name>
-            <url>https://repo.szczurowsky.pl/snapshots</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>eu.okaeri</groupId>
@@ -32,10 +19,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
 
 </project>
